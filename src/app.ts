@@ -17,7 +17,7 @@ app.use(express.json());
 // configura o CORS
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://frontendrender.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
