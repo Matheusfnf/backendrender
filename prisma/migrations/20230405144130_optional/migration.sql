@@ -1,0 +1,10 @@
+-- AlterTable
+ALTER TABLE "identAmostra" ALTER COLUMN "codigo" DROP NOT NULL,
+ALTER COLUMN "fabricacao" DROP NOT NULL,
+ALTER COLUMN "vencimento" DROP NOT NULL,
+ALTER COLUMN "microorganismo" DROP NOT NULL,
+ALTER COLUMN "produtocultura" DROP NOT NULL,
+ALTER COLUMN "preco" DROP NOT NULL,
+ALTER COLUMN "ufcbolor" DROP NOT NULL,
+ALTER COLUMN "ufccoliformes" DROP NOT NULL,
+ALTER COLUMN "ufcmicroorganismo" DROP NOT NULL;

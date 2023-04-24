@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model client {
+  id       Int       @id @default(autoincrement())
+  name     String
+  cpf      String
+  ie       String?
+  email    String?
+  telefone String?
+  endereco String?
+  amostras amostra[]
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Session   Session[]
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  User      User     @relation(fields: [userId], references: [id])
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model amostra {
+  id                 Int            @id @default(autoincrement())
+  fazenda            String
+  quemColetou        String
+  municipio          String
+  estado             String
+  entradaNoLab       String
+  datadaColeta       String
+  temperatura        String
+  entreguePor        String
+  Ocorrencias        String
+  cliente_id         Int?
+  cliente            client?        @relation(fields: [cliente_id], references: [id])
+  identAmostra       identAmostra[]
+  comercial          Boolean?
+  onFarm             Boolean?
+  viabilidadeEmAgua  Boolean?
+  contagemDeConidios Boolean?
+  contaminantes      Boolean?
+  ph                 Boolean?
+  agua               Boolean?
+  solo               Boolean?
+}
+
+model identAmostra {
+  id                Int      @id @default(autoincrement())
+  codigo            String?
+  fabricacao        String?
+  vencimento        String?
+  microorganismo    String?
+  produtocultura    String?
+  preco             String?
+  ufcmicroorganismo String?
+  ufccoliformes     String?
+  ufcbolor          String?
+  amostra_id        Int?
+  amostra           amostra? @relation(fields: [amostra_id], references: [id])
+}
