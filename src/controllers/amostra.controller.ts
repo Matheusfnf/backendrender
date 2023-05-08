@@ -22,6 +22,35 @@ export async function getAmostra(req: AuthenticatedRequest, res: Response) {
   }
 }
 
+export async function deleteAmostra(req: Request, res: Response) {
+  try {
+    const { amostraId } = req.params;
+
+    const amostra = await prisma.amostra.findUnique({
+      where: {
+        id: parseInt(amostraId),
+      },
+    });
+
+    if (!amostra) {
+      res.status(404).send("Amostra não encontrada.");
+      return;
+    }
+
+    await prisma.amostra.delete({
+      where: {
+        id: parseInt(amostraId),
+      },
+    });
+
+    res.status(200).send("Amostra deletada com sucesso.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro ao deletar amostra.");
+  }
+}
+
+
 export async function createAmostra(req: Request, res: Response) {
   try {
     const {
