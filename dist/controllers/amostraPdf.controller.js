@@ -1,44 +1,32 @@
-import { Request, Response } from "express";
-import { PrismaClient, amostra, client, identAmostra } from "@prisma/client";
-import puppeteer, { PDFOptions, PaperFormat } from "puppeteer";
-import fs from "fs";
-import path from "path";
-
-const prisma = new PrismaClient();
-
-interface AmostraComCliente extends amostra {
-  cliente: client | null;
-  identAmostra: identAmostra[];
-}
-
-export async function gerarPdf(req: Request, res: Response) {
-  try {
-    const amostraId = parseInt(req.params.id);
-    console.log("Req params:", req.params);
-
-    if (isNaN(amostraId)) {
-      res.status(400).send("Invalid amostraId parameter");
-      return;
-    }
-    console.log("Amostra ID:", amostraId);
-
-    const amostra: AmostraComCliente = await prisma.amostra.findUnique({
-      where: { id: amostraId },
-      include: { cliente: true, identAmostra: true },
-    });
-
-    const imagePath = path.join(
-      __dirname,
-      "..",
-      "..",
-      "src",
-      "imgs",
-      "proativalab.png"
-    );
-    const imageBase64 = fs.readFileSync(imagePath, { encoding: "base64" });
-
-    // Renderize seu HTML com os dados da amostra e do cliente
-    const html = `
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.gerarPdf = void 0;
+const client_1 = require("@prisma/client");
+const puppeteer_1 = __importDefault(require("puppeteer"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const chrome_aws_lambda_1 = __importDefault(require("chrome-aws-lambda"));
+const prisma = new client_1.PrismaClient();
+async function gerarPdf(req, res) {
+    try {
+        const amostraId = parseInt(req.params.id);
+        console.log("Req params:", req.params);
+        if (isNaN(amostraId)) {
+            res.status(400).send("Invalid amostraId parameter");
+            return;
+        }
+        console.log("Amostra ID:", amostraId);
+        const amostra = await prisma.amostra.findUnique({
+            where: { id: amostraId },
+            include: { cliente: true, identAmostra: true },
+        });
+        const imagePath = path_1.default.join(__dirname, "..", "..", "src", "imgs", "proativalab.png");
+        const imageBase64 = fs_1.default.readFileSync(imagePath, { encoding: "base64" });
+        // Renderize seu HTML com os dados da amostra e do cliente
+        const html = `
      <!DOCTYPE html>
 <html>
 <head>
@@ -217,67 +205,35 @@ export async function gerarPdf(req: Request, res: Response) {
     <div class="section">
       <h2>Informações cadastrais</h2>
       <div class="grid-container">
-        <div class="grid-item"><p><strong>Solicitante:</strong> ${
-          amostra.cliente?.name
-        }</p></div>
-        <div class="grid-item"><p><strong>Fazenda:</strong> ${
-          amostra.fazenda
-        }</p></div>
-        <div class="grid-item"><p><strong>Quem coletou:</strong> ${
-          amostra.quemColetou
-        }</p></div>
-        <div class="grid-item"><p><strong>Entregue Por:</strong> ${
-          amostra.entreguePor
-        }</p></div>
-        <div class="grid-item"><p><strong>Proprietário:</strong> ${
-          amostra.cliente?.name
-        }</p></div>
-        <div class="grid-item"><p><strong>Data coleta:</strong> ${
-          amostra.datadaColeta
-        }</p></div>
-        <div class="grid-item"><p><strong>Entrada no laboratório:</strong> ${
-          amostra.entradaNoLab
-        }</p></div>
-        <div class="grid-item"><p><strong>Município:</strong> ${
-          amostra.municipio
-        }</p></div>
-        <div class="grid-item"><p><strong>Estado:</strong> ${
-          amostra.estado
-        }</p></div>
-        <div class="grid-item"><p><strong>Temperatura:</strong> ${
-          amostra.temperatura
-        }</p></div>
+        <div class="grid-item"><p><strong>Solicitante:</strong> ${amostra.cliente?.name}</p></div>
+        <div class="grid-item"><p><strong>Fazenda:</strong> ${amostra.fazenda}</p></div>
+        <div class="grid-item"><p><strong>Quem coletou:</strong> ${amostra.quemColetou}</p></div>
+        <div class="grid-item"><p><strong>Entregue Por:</strong> ${amostra.entreguePor}</p></div>
+        <div class="grid-item"><p><strong>Proprietário:</strong> ${amostra.cliente?.name}</p></div>
+        <div class="grid-item"><p><strong>Data coleta:</strong> ${amostra.datadaColeta}</p></div>
+        <div class="grid-item"><p><strong>Entrada no laboratório:</strong> ${amostra.entradaNoLab}</p></div>
+        <div class="grid-item"><p><strong>Município:</strong> ${amostra.municipio}</p></div>
+        <div class="grid-item"><p><strong>Estado:</strong> ${amostra.estado}</p></div>
+        <div class="grid-item"><p><strong>Temperatura:</strong> ${amostra.temperatura}</p></div>
       </div>
     </div>
 
     <div class="section">
   <h2>Apresentação dos resultados</h2>
   ${amostra.identAmostra
-    .map(
-      (ident, index) => `
+            .map((ident, index) => `
         <div class="resultadosBox">
           <div class="grid-container">
-            <div class="grid-item"><p><strong>Código:</strong> ${
-              ident.codigo
-            }</p></div>
-            <div class="grid-item"><p><strong>Amostra OnFarm:</strong> ${
-              ident.microorganismo
-            }</p></div>
-            <div class="grid-item"><p><strong>microorganismo(UFC/ml):</strong> ${
-              ident.ufcmicroorganismo
-            }</p></div>
-            <div class="grid-item"><p><strong>Coliformes(UFC/ml):</strong> ${
-              ident.ufccoliformes
-            }</p></div>
-            <div class="grid-item"><p><strong>Bolor/levedura(UFC/ml):</strong> ${
-              ident.ufcbolor
-            }</p></div>
+            <div class="grid-item"><p><strong>Código:</strong> ${ident.codigo}</p></div>
+            <div class="grid-item"><p><strong>Amostra OnFarm:</strong> ${ident.microorganismo}</p></div>
+            <div class="grid-item"><p><strong>microorganismo(UFC/ml):</strong> ${ident.ufcmicroorganismo}</p></div>
+            <div class="grid-item"><p><strong>Coliformes(UFC/ml):</strong> ${ident.ufccoliformes}</p></div>
+            <div class="grid-item"><p><strong>Bolor/levedura(UFC/ml):</strong> ${ident.ufcbolor}</p></div>
           </div>
         </div>
         ${index < amostra.identAmostra.length - 1 ? "<hr>" : ""}
-      `
-    )
-    .join("")}
+      `)
+            .join("")}
 </div>
       </div>
        
@@ -345,41 +301,39 @@ export async function gerarPdf(req: Request, res: Response) {
 </html>
 
     `;
-
-    // Inicialize o Puppeteer e crie um PDF a partir do HTML
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(html);
-    const pdfOptions: PDFOptions = {
-      format: "A4" as PaperFormat,
-      printBackground: true,
-      margin: {
-        top: "5mm",
-        bottom: "20mm",
-        left: "20mm",
-        right: "20mm",
-      },
-    };
-
-    await page.evaluate(() => {
-      document.body.innerHTML = document.body.innerHTML.replace(
-        /\^(\d+)/g,
-        "<sup>$1</sup>"
-      );
-    });
-
-    const pdf = await page.pdf(pdfOptions);
-    await browser.close();
-
-    // Enviar o PDF como resposta
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="amostra_${amostraId}.pdf"`
-    );
-    res.send(pdf);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("...Erro ao gerar PDF");
-  }
+        // Inicialize o Puppeteer e crie um PDF a partir do HTML
+        const executablePath = (await chrome_aws_lambda_1.default.executablePath) || "/usr/bin/google-chrome-stable";
+        const browser = await puppeteer_1.default.launch({
+            args: chrome_aws_lambda_1.default.args,
+            defaultViewport: chrome_aws_lambda_1.default.defaultViewport,
+            executablePath,
+            headless: chrome_aws_lambda_1.default.headless,
+        });
+        const page = await browser.newPage();
+        await page.setContent(html);
+        const pdfOptions = {
+            format: "A4",
+            printBackground: true,
+            margin: {
+                top: "5mm",
+                bottom: "20mm",
+                left: "20mm",
+                right: "20mm",
+            },
+        };
+        await page.evaluate(() => {
+            document.body.innerHTML = document.body.innerHTML.replace(/\^(\d+)/g, "<sup>$1</sup>");
+        });
+        const pdf = await page.pdf(pdfOptions);
+        await browser.close();
+        // Enviar o PDF como resposta
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename="amostra_${amostraId}.pdf"`);
+        res.send(pdf);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send("...Erro ao gerar PDF");
+    }
 }
+exports.gerarPdf = gerarPdf;
