@@ -347,7 +347,9 @@ export async function gerarPdf(req: Request, res: Response) {
     `;
 
     // Inicialize o Puppeteer e crie um PDF a partir do HTML
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: "new",
+    });
     const page = await browser.newPage();
     await page.setContent(html);
     const pdfOptions: PDFOptions = {
