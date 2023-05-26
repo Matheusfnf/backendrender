@@ -59,13 +59,13 @@ export async function gerarPdf(req: Request, res: Response) {
     }
 
    .logo {
-      max-width: 150px;
+      max-width: 100px;
       margin-bottom: 5px;
       float: left;
 }
 
    h1 {
-    font-size: 22px;
+    font-size: 18px;
     color: #333;
     margin-bottom: 5px;
     margin-left: 10px;
@@ -86,11 +86,11 @@ export async function gerarPdf(req: Request, res: Response) {
 }
 
     h2 {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       color: #333;
-      margin-bottom: 1rem;
+      margin-bottom: 10px;
       background-color: #0FBFEA;
-      padding: 5px;
+      padding: 3px;
       border: 1px solid black;
       border-radius: 5px;
 
@@ -124,13 +124,18 @@ export async function gerarPdf(req: Request, res: Response) {
 
     .grid-container {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       
     }
 
     .grid-item {
       text-align: left;
     }
+
+    .grid-item p {
+          font-size: 10px; /* Tamanho da fonte para as informações cadastrais */
+          margin-bottom: 1px; /* Espaçamento vertical entre as informações cadastrais */
+        }
 
     .header-grid {
       display: grid;
@@ -162,15 +167,22 @@ export async function gerarPdf(req: Request, res: Response) {
   text-align: left;
 }
 
-    .legenda {
+   .legenda {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 5px;
     border: 1px solid #333;
     border-radius: 5px;
-    padding: 10px;
-    width: 60%;
-    height: 200px;
-    margin-left: auto;
+    padding: 5px;
+    width: 100%;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Adiciona cinco colunas */
+    gap: 5px; /* Espaçamento entre as colunas */
+  }
+
+  .legenda h4 {
+    font-size: 8px;
+    margin: 0;
   }
 
   .wrapper {
@@ -178,19 +190,13 @@ export async function gerarPdf(req: Request, res: Response) {
     flex-direction: column;
   }
 
-  .legenda-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    
-  }
-  
-  .legenda-item {
-    text-align: left;
+   .wrapper h3 {
+    font-size: 10px;
   }
 
-  h4 {
-  font-size: 10px;
-}
+    .footer p {
+      font-size: 10px;
+    }
 
   </style>
 </head>
@@ -274,39 +280,40 @@ export async function gerarPdf(req: Request, res: Response) {
     .join("")}
 </div>
       </div>
-       <div class="grid-container">
+       
         
       </div>
       
     </div>
 <div class="wrapper">
-   <div class="legenda">
-      <h4><strong>Legenda:</strong></h4>
-      <div class="legenda-grid">
-      <div class="legenda-item">
+        <h3><strong>Legenda:</strong></h3>
+        <div class="legenda">
+      
+      
+      
         <h4>UFC = unidades formadoras de colônia</h4>
         <h4>N.D = não detectado</h4>
         <h4>NC = não consta</h4>
         <h4>NS = não solicitado</h4>
         <h4>10<sup>0</sup> = 1</h4>
-      </div>
-      <div class="legenda-item">
+      
+      
         <h4>10<sup>1</sup> = 10</h4>
         <h4>10<sup>2</sup> = 100</h4>
         <h4>10<sup>3</sup> = 1.000</h4>
         <h4>10<sup>4</sup> = 10.000</h4>
         <h4>10<sup>5</sup> = 100.000</h4>
-      </div>
-      <div class="legenda-item">
+      
+      
         <h4>10<sup>6</sup> = 1.000.000</h4>
         <h4>10<sup>7</sup> = 10.000.000</h4>
         <h4>10<sup>8</sup> = 100.000.000</h4>
         <h4>10<sup>9</sup> = 1.000.000.000</h4>
         <h4>10<sup>10</sup> = 10.000.000.000</h4>
-      </div>
+      
+    
     </div>
-    </div>
-</div>
+
 
 
     <div class="responsavel-tecnico">
@@ -353,6 +360,13 @@ export async function gerarPdf(req: Request, res: Response) {
         right: "20mm",
       },
     };
+
+    await page.evaluate(() => {
+      document.body.innerHTML = document.body.innerHTML.replace(
+        /\^(\d+)/g,
+        "<sup>$1</sup>"
+      );
+    });
 
     const pdf = await page.pdf(pdfOptions);
     await browser.close();
