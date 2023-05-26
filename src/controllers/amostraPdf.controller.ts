@@ -3,6 +3,7 @@ import { PrismaClient, amostra, client, identAmostra } from "@prisma/client";
 import puppeteer, { PDFOptions, PaperFormat } from "puppeteer";
 import fs from "fs";
 import path from "path";
+import chromium from "chrome-aws-lambda";
 
 const prisma = new PrismaClient();
 
@@ -347,7 +348,14 @@ export async function gerarPdf(req: Request, res: Response) {
     `;
 
     // Inicialize o Puppeteer e crie um PDF a partir do HTML
-    const browser = await puppeteer.launch();
+     const executablePath =
+       (await chromium.executablePath) || "/usr/bin/google-chrome-stable";
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath,
+      headless: chromium.headless,
+    });
     const page = await browser.newPage();
     await page.setContent(html);
     const pdfOptions: PDFOptions = {
